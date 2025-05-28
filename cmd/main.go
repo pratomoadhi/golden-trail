@@ -26,9 +26,13 @@ import (
 )
 
 func main() {
+	// Load config and connect database
+	config.LoadConfig()
+	config.ConnectDatabase(config.AppConfig)
+
 	// Initialize Sentry
 	err := sentry.Init(sentry.ClientOptions{
-		Dsn:              "https://e57b54f2bc84916ab4ad710ab8011940@o4509400465866752.ingest.us.sentry.io/4509400468619264", // Replace this with your actual DSN
+		Dsn:              config.AppConfig.SentryDsn,
 		TracesSampleRate: 1.0,
 		Environment:      "production",
 	})
@@ -36,10 +40,6 @@ func main() {
 		log.Fatalf("Sentry init failed: %v", err)
 	}
 	defer sentry.Flush(2 * time.Second)
-
-	// Load config and connect database
-	config.LoadConfig()
-	config.ConnectDatabase(config.AppConfig)
 
 	r := gin.Default()
 

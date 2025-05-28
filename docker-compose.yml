@@ -1,24 +1,38 @@
-version: "3.8"
+version: "3.9"
+
 services:
   db:
-    image: postgres:15
+    image: postgres:15-alpine
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: golden_trail
+      POSTGRES_DB: goldentrail-db
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      retries: 5
+      timeout: 5s
 
   api:
     build: .
     ports:
-      - "8080:8080"
-    env_file:
-      - .env
+      - "5000:5000"
+    environment:
+      PORT: "5000"
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: goldentrail-db
+      JWT_SECRET: "your_jwt_secret"
+      SENTRY_DSN: "your_sentry_dsn"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
 volumes:
-  postgres_data:
+  pgdata:

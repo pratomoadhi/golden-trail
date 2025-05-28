@@ -1,9 +1,11 @@
 package controller
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 
+	"github.com/getsentry/sentry-go"
 	"github.com/gin-gonic/gin"
 	"github.com/pratomoadhi/golden-trail/config"
 	"github.com/pratomoadhi/golden-trail/model"
@@ -83,12 +85,15 @@ func ListTransactions(c *gin.Context) {
 func CreateTransaction(c *gin.Context) {
 	var input model.TransactionInput
 	if err := c.ShouldBindJSON(&input); err != nil {
+		sentry.CaptureException(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	userIDRaw, exists := c.Get("userID")
 	if !exists {
+		err := errors.New("unauthorized: userID not found in context")
+		sentry.CaptureException(err)
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
@@ -103,6 +108,7 @@ func CreateTransaction(c *gin.Context) {
 	}
 
 	if err := config.DB.Create(&tx).Error; err != nil {
+		sentry.CaptureException(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
