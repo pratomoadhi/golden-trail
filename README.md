@@ -78,6 +78,8 @@ http://localhost:5000/swagger/index.html
 
 You can interact with the API endpoints directly via this UI.
 
+![Swagger UI](screenshots/swagger.png)
+
 ---
 
 ## Continuous Integration and Deployment
@@ -108,6 +110,8 @@ To enable:
 
 - Set `SENTRY_DSN` environment variable with your project's DSN.  
 - The app will automatically send errors to Sentry for real-time monitoring and alerts.
+
+![Sentry](screenshots/sentry.png)
 
 ---
 
