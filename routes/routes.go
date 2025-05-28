@@ -2,6 +2,7 @@ package routes
 
 import (
 	"github.com/pratomoadhi/golden-trail/controller"
+	"github.com/pratomoadhi/golden-trail/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -14,6 +15,13 @@ func SetupRoutes(r *gin.Engine) {
 	auth := r.Group("/auth")
 	{
 		auth.POST("/register", controller.Register)
-		// auth.POST("/login", controller.Login) // Next step
+		auth.POST("/login", controller.Login)
+	}
+
+	transaction := r.Group("/transactions")
+	transaction.Use(middleware.JWTAuth())
+	{
+		transaction.POST("/", controller.CreateTransaction)
+		transaction.GET("/", controller.ListTransactions)
 	}
 }

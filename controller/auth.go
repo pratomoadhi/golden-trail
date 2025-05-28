@@ -5,6 +5,7 @@ import (
 
 	"github.com/pratomoadhi/golden-trail/config"
 	"github.com/pratomoadhi/golden-trail/model"
+	"github.com/pratomoadhi/golden-trail/utils"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
@@ -18,7 +19,7 @@ type RegisterInput struct {
 // Register godoc
 // @Summary Register a new user
 // @Description Creates a new user with username and password
-// @Tags auth
+// @Tags Auth
 // @Accept json
 // @Produce json
 // @Param input body RegisterInput true "User credentials"
@@ -47,4 +48,42 @@ func Register(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, gin.H{"message": "User registered successfully"})
+}
+
+// Login godoc
+// @Summary Login a user
+// @Description Authenticate user and return token
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param input body model.LoginInput true "Login credentials"
+// @Success 200 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Router /auth/login [post]
+func Login(c *gin.Context) {
+	var input model.LoginInput
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var user model.User
+	if err := config.DB.Where("username = ?", input.Username).First(&user).Error; err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+		return
+	}
+
+	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.Password))
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+		return
+	}
+
+	token, err := utils.GenerateToken(user.ID, config.AppConfig.JwtSecret)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"token": token})
 }

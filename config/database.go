@@ -24,4 +24,5 @@ func ConnectDatabase(cfg Config) {
 
 	DB = db
 	DB.AutoMigrate(&model.User{})
+	DB.AutoMigrate(&model.Transaction{})
 }

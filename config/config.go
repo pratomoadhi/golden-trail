@@ -17,6 +17,8 @@ type Config struct {
 	SentryDsn  string
 }
 
+var AppConfig Config
+
 func LoadConfig() Config {
 	viper.SetConfigFile(".env")
 	err := viper.ReadInConfig()
@@ -24,7 +26,7 @@ func LoadConfig() Config {
 		log.Fatalf("Error loading config: %v", err)
 	}
 
-	return Config{
+	AppConfig = Config{
 		Port:       viper.GetString("PORT"),
 		DbHost:     viper.GetString("DB_HOST"),
 		DbPort:     viper.GetString("DB_PORT"),
@@ -34,4 +36,6 @@ func LoadConfig() Config {
 		JwtSecret:  viper.GetString("JWT_SECRET"),
 		SentryDsn:  viper.GetString("SENTRY_DSN"),
 	}
+
+	return AppConfig
 }
