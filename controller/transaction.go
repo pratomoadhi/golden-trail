@@ -3,11 +3,11 @@ package controller
 import (
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/pratomoadhi/golden-trail/config"
 	"github.com/pratomoadhi/golden-trail/model"
+	"github.com/pratomoadhi/golden-trail/utils"
 )
 
 // ListTransactions godoc
@@ -99,7 +99,7 @@ func CreateTransaction(c *gin.Context) {
 		Amount: input.Amount,
 		Type:   input.Type,
 		Note:   input.Note,
-		Date:   parseDate(input.Date),
+		Date:   utils.ParseDate(input.Date),
 	}
 
 	if err := config.DB.Create(&tx).Error; err != nil {
@@ -108,9 +108,4 @@ func CreateTransaction(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, tx)
-}
-
-func parseDate(dateStr string) time.Time {
-	t, _ := time.Parse("2006-01-02", dateStr)
-	return t
 }
