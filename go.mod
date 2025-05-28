@@ -3,6 +3,7 @@ module github.com/pratomoadhi/golden-trail
 go 1.23.3
 
 require (
+	github.com/getsentry/sentry-go v0.33.0
 	github.com/gin-gonic/gin v1.10.1
 	github.com/glebarez/sqlite v1.11.0
 	github.com/golang-jwt/jwt/v5 v5.2.2

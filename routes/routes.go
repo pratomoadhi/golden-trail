@@ -11,6 +11,9 @@ func SetupRoutes(r *gin.Engine) {
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{"message": "pong"})
 	})
+	r.GET("/panic", func(c *gin.Context) {
+		panic("test panic for Sentry")
+	})
 
 	auth := r.Group("/auth")
 	{

@@ -23,6 +23,11 @@ func ConnectDatabase(cfg Config) {
 	}
 
 	DB = db
-	DB.AutoMigrate(&model.User{})
-	DB.AutoMigrate(&model.Transaction{})
+	if err := DB.AutoMigrate(&model.User{}); err != nil {
+		panic("AutoMigrate User failed: " + err.Error())
+	}
+
+	if err := DB.AutoMigrate(&model.Transaction{}); err != nil {
+		panic("AutoMigrate Transaction failed: " + err.Error())
+	}
 }
